@@ -4,7 +4,7 @@
 
 **A Cross-Platform, Privacy-First Task Manager & Focus Companion Built with .NET MAUI**
 
-[![.NET MAUI](https://img.shields.io/badge/.NET%20MAUI-9.0-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/apps/maui)
+[![.NET MAUI](https://img.shields.io/badge/.NET%20MAUI-10.0-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/apps/maui)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20Android-0078D4?style=for-the-badge&logo=windows)](https://github.com/cyberbehzad/TikThat/releases/latest)
 [![SQLite](https://img.shields.io/badge/Storage-Local%20SQLite-003B57?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
@@ -19,7 +19,7 @@
 
 ## ✨ Overview
 
-**TikThat** is a modern, offline-first task management and productivity application built on **.NET MAUI** for **Windows** and **Android**. Designed with a sleek dark/light adaptive UI, it combines daily task tracking, native Jalali (Persian) seasonal calendars, geofenced location reminders, biometric task locking, and a gamified **Ninja Focus Mode** — while keeping 100% of user data strictly local on the device.
+**TikThat** is a modern, offline-first task management and productivity application built on **.NET MAUI (.NET 10)** for **Windows** and **Android**. Designed with a sleek dark/light adaptive UI, it combines daily task tracking, native Jalali (Persian) seasonal calendars, geofenced location reminders, biometric task locking, and a gamified **Ninja Focus Mode** — while keeping 100% of user data strictly local on the device.
 
 ---
 
@@ -50,9 +50,9 @@ No developer tools are required to use **TikThat**. Go to the [**Releases**](htt
 ## 🛠️ Building from Source (For Developers)
 
 ### Prerequisites
-* [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
+* [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
 * .NET MAUI workload (`dotnet workload install maui`)
-* **Visual Studio 2022** (17.12+) with *.NET Multi-platform App UI development* workload
+* **Visual Studio 2022 / 2026** with *.NET Multi-platform App UI development* workload
 
 ### Clone & Run
 
@@ -60,4 +60,4 @@ No developer tools are required to use **TikThat**. Go to the [**Releases**](htt
 git clone [https://github.com/cyberbehzad/TikThat.git](https://github.com/cyberbehzad/TikThat.git)
 cd TikThat
 dotnet restore
-dotnet build -t:Run -f net9.0-windows10.0.19041.0
+dotnet build -t:Run -f net10.0-windows10.0.19041.0
