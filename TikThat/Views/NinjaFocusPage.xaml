@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:TikThat.ViewModels"
+             xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+             x:Class="TikThat.Views.NinjaFocusPage"
+             x:DataType="viewmodel:NinjaFocusViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#0A0A10">
+
+    <Grid>
+        <Image Source="ninja_setup_background.png"
+               Aspect="AspectFill"
+               Opacity="0.12"
+               HorizontalOptions="Fill"
+               VerticalOptions="Fill"
+               InputTransparent="True" />
+
+        <Grid RowDefinitions="Auto, *, Auto" Padding="25, 45, 25, 30" RowSpacing="20">
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
+                <Border Grid.Column="1"
+                        StrokeShape="RoundRectangle(20)"
+                        Stroke="#242436"
+                        BackgroundColor="#141420"
+                        Padding="16,8"
+                        HorizontalOptions="Center">
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <BoxView Color="#E53935" WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"/>
+                        <Label Text="حالت تمرکز نینجا فعال است"
+                               FontFamily="Vazirmatn"
+                               FontSize="13"
+                               TextColor="#E0E0E0"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="1" VerticalOptions="Center" Spacing="24">
+
+                <Border StrokeShape="RoundRectangle(16)"
+                        Stroke="#2E2E42"
+                        BackgroundColor="#161624"
+                        Padding="20,15"
+                        Margin="10,0">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="ماموریت جاری:"
+                               FontFamily="Vazirmatn"
+                               FontSize="12"
+                               TextColor="#8A4FFF"
+                               HorizontalOptions="Center"/>
+                        <Label Text="{Binding TaskToFocus.Text}"
+                               FontFamily="Vazirmatn"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               TextColor="#FFFFFF"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid HeightRequest="260" WidthRequest="260" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Ellipse Stroke="#1F1F30"
+                             StrokeThickness="10"
+                             HeightRequest="250"
+                             WidthRequest="250"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"/>
+
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                        <Label Text="{Binding TimerText}"
+                               FontFamily="Vazirmatn"
+                               FontSize="50"
+                               FontAttributes="Bold"
+                               TextColor="#FFFFFF"
+                               HorizontalOptions="Center"/>
+
+                        <Button Text="{Binding PauseButtonText}"
+                                Command="{Binding TogglePauseCommand}"
+                                BackgroundColor="#1E1E2C"
+                                TextColor="#8A4FFF"
+                                CornerRadius="14"
+                                HeightRequest="38"
+                                Padding="18,0"
+                                FontSize="13"
+                                FontFamily="Vazirmatn"
+                                HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <ProgressBar Progress="{Binding Progress}" 
+                             ProgressColor="#8A4FFF" 
+                             Margin="25,0"
+                             HeightRequest="6"/>
+
+                <Label Text="خروج قبل از اتمام زمان، ماموریت را ناموفق خواهد کرد."
+                       FontFamily="Vazirmatn"
+                       FontSize="12"
+                       TextColor="#FFA726"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       Opacity="0.85"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="2" Spacing="12">
+                <Button Text="تسک را انجام دادم (ثبت موفقیت)"
+                        Command="{Binding CompleteSessionCommand}"
+                        FontFamily="Vazirmatn"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        TextColor="White"
+                        HeightRequest="54"
+                        CornerRadius="27">
+                    <Button.Background>
+                        <LinearGradientBrush>
+                            <GradientStop Color="#0078D4" Offset="0.0" />
+                            <GradientStop Color="#8A4FFF" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
+                    <Button.Shadow>
+                        <Shadow Brush="#8A4FFF" Offset="0,4" Radius="12" Opacity="0.5"/>
+                    </Button.Shadow>
+                </Button>
+
+                <Button Text="تسلیم و لغو ماموریت"
+                        Command="{Binding AbortSessionCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="#E53935"
+                        FontFamily="Vazirmatn"
+                        FontSize="14"
+                        HeightRequest="42"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <skia:SKLottieView Source="all_done_confetti.json"
+                           RepeatCount="0"
+                           IsAnimationEnabled="{Binding IsCompletionAnimationVisible}"
+                           IsVisible="{Binding IsCompletionAnimationVisible}"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill"
+                           InputTransparent="True"
+                           ZIndex="100"/>
+
+        <skia:SKLottieView Source="ink_transition.json"
+                           RepeatCount="0"
+                           IsAnimationEnabled="{Binding IsTransitioning}"
+                           IsVisible="{Binding IsTransitioning}"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill"
+                           InputTransparent="True"
+                           ZIndex="999"/>
+    </Grid>
+</ContentPage>

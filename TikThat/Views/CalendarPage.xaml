@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:TikThat.ViewModels"
+             xmlns:model="clr-namespace:TikThat.Models"
+             xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+             xmlns:converters="clr-namespace:TikThat.Converters"
+             x:Class="TikThat.Views.CalendarPage"
+             x:DataType="viewmodel:CalendarViewModel"
+             x:Name="calendarPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#121212">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InvertedBoolConverter x:Key="BoolToOpacityConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Image Source="{Binding MonthImageSource}"
+               Aspect="AspectFill"
+               HorizontalOptions="Fill"
+               VerticalOptions="Fill"
+               Opacity="0.45" />
+
+        <BoxView BackgroundColor="#99121218"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill" />
+
+        <skia:SKLottieView 
+            Source="{Binding SeasonalAnimationSource}"
+            RepeatCount="-1"
+            IsAnimationEnabled="True"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            InputTransparent="True"
+            Opacity="0.18"/>
+
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="20, 45, 20, 20" RowSpacing="16">
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
+                <Button Grid.Column="0"
+                        Text="← بازگشت"
+                        Command="{Binding GoBackCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="#B58AFF"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        FontFamily="Vazirmatn"/>
+
+                <Label Grid.Column="1" 
+                       Text="تقویم فصلی" 
+                       FontSize="22" 
+                       FontAttributes="Bold" 
+                       TextColor="White"
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center"
+                       FontFamily="Vazirmatn"/>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="Auto, *, Auto" HorizontalOptions="Fill" Margin="10,0">
+                <Button Grid.Column="0" 
+                        Text="ماه قبل &gt;" 
+                        Command="{Binding ChangeMonthCommand}" 
+                        CommandParameter="prev" 
+                        BackgroundColor="Transparent" 
+                        TextColor="#B58AFF" 
+                        FontAttributes="Bold" 
+                        FontFamily="Vazirmatn"
+                        FontSize="14"/>
+
+                <Label Grid.Column="1" 
+                       Text="{Binding CurrentMonthYearText}" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       TextColor="White"
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center" 
+                       FontFamily="Vazirmatn"/>
+
+                <Button Grid.Column="2" 
+                        Text="&lt; ماه بعد" 
+                        Command="{Binding ChangeMonthCommand}" 
+                        CommandParameter="next" 
+                        BackgroundColor="Transparent" 
+                        TextColor="#B58AFF" 
+                        FontAttributes="Bold" 
+                        FontFamily="Vazirmatn"
+                        FontSize="14"/>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*,*,*,*" Padding="5,0">
+                <Label Grid.Column="0" Text="ش" HorizontalOptions="Center" FontAttributes="Bold" TextColor="#D0D0D0" FontFamily="Vazirmatn" FontSize="14"/>
+                <Label Grid.Column="1" Text="ی" HorizontalOptions="Center" FontAttributes="Bold" TextColor="#D0D0D0" FontFamily="Vazirmatn" FontSize="14"/>
+                <Label Grid.Column="2" Text="د" HorizontalOptions="Center" FontAttributes="Bold" TextColor="#D0D0D0" FontFamily="Vazirmatn" FontSize="14"/>
+                <Label Grid.Column="3" Text="س" HorizontalOptions="Center" FontAttributes="Bold" TextColor="#D0D0D0" FontFamily="Vazirmatn" FontSize="14"/>
+                <Label Grid.Column="4" Text="چ" HorizontalOptions="Center" FontAttributes="Bold" TextColor="#D0D0D0" FontFamily="Vazirmatn" FontSize="14"/>
+                <Label Grid.Column="5" Text="پ" HorizontalOptions="Center" FontAttributes="Bold" TextColor="#D0D0D0" FontFamily="Vazirmatn" FontSize="14"/>
+                <Label Grid.Column="6" Text="ج" HorizontalOptions="Center" FontAttributes="Bold" TextColor="#FF5252" FontFamily="Vazirmatn" FontSize="14"/>
+            </Grid>
+
+            <BoxView Grid.Row="3" HeightRequest="1" Color="#44FFFFFF" Margin="0, -6, 0, 0"/>
+
+            <CollectionView Grid.Row="4" ItemsSource="{Binding Days}" SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="7" VerticalItemSpacing="8" HorizontalItemSpacing="6"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:CalendarDay">
+                        <Grid HeightRequest="48" WidthRequest="44">
+                            <Border StrokeShape="RoundRectangle(12)" 
+                                    StrokeThickness="1"
+                                    Opacity="{Binding IsOtherMonth, Converter={StaticResource BoolToOpacityConverter}}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BackgroundColor" Value="#441E1E26" />
+                                        <Setter Property="Stroke" Value="#553A3A4A" />
+                                        <Style.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
+                                                <Setter Property="Stroke" Value="#8A4FFF" />
+                                                <Setter Property="StrokeThickness" Value="2" />
+                                                <Setter Property="BackgroundColor" Value="#88371F6E" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference calendarPage}, Path=BindingContext.SelectDateCommand}" 
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+
+                                <Grid RowDefinitions="*, Auto">
+                                    <Label Grid.Row="0" 
+                                           Text="{Binding Day}" 
+                                           HorizontalOptions="Center" 
+                                           VerticalOptions="Center"
+                                           FontSize="15" 
+                                           TextColor="White"
+                                           FontFamily="Vazirmatn">
+                                        <Label.Style>
+                                            <Style TargetType="Label">
+                                                <Style.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsToday}" Value="True">
+                                                        <Setter Property="TextColor" Value="#B58AFF" />
+                                                        <Setter Property="FontAttributes" Value="Bold" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Label.Style>
+                                    </Label>
+
+                                    <BoxView Grid.Row="1" 
+                                             IsVisible="{Binding HasTask}" 
+                                             Color="#8A4FFF" 
+                                             CornerRadius="3"
+                                             HeightRequest="5" 
+                                             WidthRequest="5" 
+                                             HorizontalOptions="Center" 
+                                             Margin="0,0,0,5"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Windows Machine": {
+      "commandName": "MsixPackage"
+    },
+    "TikThat": {
+      "commandName": "Project",
+      "dotnetRunMessages": true
+    }
+  }
+}

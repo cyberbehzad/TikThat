@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:TikThat.ViewModels"
+             xmlns:model="clr-namespace:TikThat.Models"
+             x:Class="TikThat.Views.ProfilePage"
+             x:DataType="viewmodel:ProfileViewModel"
+             x:Name="profilePage"
+             Shell.NavBarIsVisible="False"
+             FlowDirection="RightToLeft"
+             BackgroundColor="#121218">
+
+    <Grid>
+        <!-- Root View Layout -->
+        <Grid RowDefinitions="Auto, *">
+            <!-- Navigation Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="20, 45, 20, 15" BackgroundColor="#121218">
+                <Button Grid.Column="0" 
+                        Text="بازگشت →" 
+                        Command="{Binding GoBackCommand}"
+                        BackgroundColor="Transparent" 
+                        TextColor="#8A4FFF" 
+                        FontAttributes="Bold" 
+                        FontSize="14"
+                        FontFamily="Vazirmatn"/>
+
+                <Label Grid.Column="1" 
+                       Text="پروفایل کاربری" 
+                       FontSize="22" 
+                       FontAttributes="Bold" 
+                       TextColor="White"
+                       HorizontalOptions="Center" 
+                       HorizontalTextAlignment="Center"
+                       VerticalOptions="Center"
+                       FontFamily="Vazirmatn"/>
+            </Grid>
+
+            <!-- Scrollable Content Viewport -->
+            <CollectionView Grid.Row="1" 
+                            ItemsSource="{Binding Achievements}"
+                            SelectionMode="None">
+
+                <CollectionView.Header>
+                    <VerticalStackLayout Padding="20, 10, 20, 15" Spacing="18">
+                        <!-- User Metrics Card -->
+                        <Border StrokeShape="RoundRectangle 20" 
+                                Padding="20" 
+                                BackgroundColor="#1E1E26"
+                                Stroke="#2A2A38">
+                            <VerticalStackLayout Spacing="18">
+                                <Grid HorizontalOptions="Center" HeightRequest="130" WidthRequest="130">
+                                    <Border StrokeShape="RoundRectangle 65" 
+                                            HeightRequest="130" 
+                                            WidthRequest="130" 
+                                            Stroke="#8A4FFF" 
+                                            StrokeThickness="3">
+                                        <Image Aspect="AspectFill" Source="{Binding UserProfile.ProfileImagePath}" />
+                                    </Border>
+                                    <Button Text="+" 
+                                            Command="{Binding PickProfileImageCommand}" 
+                                            CornerRadius="17" 
+                                            HeightRequest="34" 
+                                            WidthRequest="34" 
+                                            HorizontalOptions="End" 
+                                            VerticalOptions="End" 
+                                            BackgroundColor="#8A4FFF" 
+                                            TextColor="White" 
+                                            FontAttributes="Bold" 
+                                            FontSize="18"/>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                                        <Label Text="{Binding UserProfile.Points}" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" FontFamily="Vazirmatn"/>
+                                        <Label Text="امتیاز" TextColor="#A0A0A0" FontSize="13" HorizontalOptions="Center" FontFamily="Vazirmatn"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                                        <Label Text="{Binding UserProfile.Level}" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" FontFamily="Vazirmatn"/>
+                                        <Label Text="سطح" TextColor="#A0A0A0" FontSize="13" HorizontalOptions="Center" FontFamily="Vazirmatn"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+                                        <Label Text="{Binding UserProfile.CurrentStreak}" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" FontFamily="Vazirmatn"/>
+                                        <Label Text="پشتکار" TextColor="#A0A0A0" FontSize="13" HorizontalOptions="Center" FontFamily="Vazirmatn"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Data Persistence & Migration Operations -->
+                        <Border StrokeShape="RoundRectangle 20"
+                                Stroke="#2A2A38"
+                                BackgroundColor="#1E1E26"
+                                Padding="18">
+                            <VerticalStackLayout Spacing="14">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="💾 همگام‌سازی و پشتیبان‌گیری" 
+                                           FontFamily="Vazirmatn" 
+                                           FontSize="16" 
+                                           FontAttributes="Bold" 
+                                           TextColor="White"/>
+                                    <Label Text="انتقال امن تسک‌ها، مدال‌ها، امتیازات و ساعت‌ها بین ویندوز و گوشی" 
+                                           FontFamily="Vazirmatn" 
+                                           FontSize="12" 
+                                           TextColor="#A0A0A0"/>
+                                </VerticalStackLayout>
+
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                                    <!-- Backup Serialization -->
+                                    <Button Grid.Column="0"
+                                            Text="📤 ایجاد بکاپ"
+                                            Command="{Binding CreateBackupCommand}"
+                                            BackgroundColor="#15151D"
+                                            TextColor="#00E5FF"
+                                            BorderColor="#00E5FF"
+                                            BorderWidth="1.5"
+                                            CornerRadius="12"
+                                            HeightRequest="44"
+                                            FontAttributes="Bold"
+                                            FontSize="13"
+                                            FontFamily="Vazirmatn"/>
+
+                                    <!-- Archive Ingestion -->
+                                    <Button Grid.Column="1"
+                                            Text="📥 بازیابی فایل"
+                                            Command="{Binding RestoreBackupCommand}"
+                                            BackgroundColor="#8A4FFF"
+                                            TextColor="White"
+                                            CornerRadius="12"
+                                            HeightRequest="44"
+                                            FontAttributes="Bold"
+                                            FontSize="13"
+                                            FontFamily="Vazirmatn"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- System Notification Scheduler Settings -->
+                        <Border StrokeShape="RoundRectangle 20"
+                                Stroke="#2A2A38"
+                                BackgroundColor="#1E1E26"
+                                Padding="18">
+                            <VerticalStackLayout Spacing="14">
+                                <!-- Global Reminder Master Switch -->
+                                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="🔔 یادآورهای هوشمند روزانه" 
+                                               FontFamily="Vazirmatn" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold" 
+                                               TextColor="White"/>
+                                        <Label Text="پیگیری خودکار تسک‌های باز در نوبت‌ها و روزهای انتخابی" 
+                                               FontFamily="Vazirmatn" 
+                                               FontSize="12" 
+                                               TextColor="#A0A0A0"/>
+                                    </VerticalStackLayout>
+                                    <Switch Grid.Column="1" 
+                                            IsToggled="{Binding UserProfile.IsDailyReminderEnabled}" 
+                                            ThumbColor="#8A4FFF" 
+                                            OnColor="#3A2A58" 
+                                            VerticalOptions="Center"/>
+                                </Grid>
+
+                                <BoxView HeightRequest="1" Color="#2A2A38" Margin="0,2"/>
+
+                                <!-- Built-in Quad-Schedule Slots -->
+                                <VerticalStackLayout Spacing="10" IsVisible="{Binding UserProfile.IsDailyReminderEnabled}">
+                                    <Label Text="نوبت‌های پیش‌فرض روزانه:" FontFamily="Vazirmatn" FontSize="12" TextColor="#8A4FFF" FontAttributes="Bold"/>
+
+                                    <!-- Morning Slot -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding UserProfile.IsMorningReminderEnabled}" Color="#8A4FFF" VerticalOptions="Center"/>
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="🌅" FontSize="16" VerticalOptions="Center"/>
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="یادآور صبحگاه" FontFamily="Vazirmatn" FontSize="13" TextColor="White"/>
+                                                <Label Text="پیش‌فرض: ۰۷:۰۰" FontFamily="Vazirmatn" FontSize="10" TextColor="#808080"/>
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                        <Border Grid.Column="2" StrokeShape="RoundRectangle 8" Padding="10,2" BackgroundColor="#15151D" Stroke="#2A2A38">
+                                            <TimePicker IsEnabled="{Binding UserProfile.IsMorningReminderEnabled}" Time="{Binding UserProfile.MorningReminderTime}" Format="HH:mm" TextColor="#00E5FF" FontFamily="Vazirmatn"/>
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Midday Slot -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding UserProfile.IsNoonReminderEnabled}" Color="#8A4FFF" VerticalOptions="Center"/>
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="☀️" FontSize="16" VerticalOptions="Center"/>
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="پیگیری ظهر" FontFamily="Vazirmatn" FontSize="13" TextColor="White"/>
+                                                <Label Text="پیش‌فرض: ۱۲:۰۰" FontFamily="Vazirmatn" FontSize="10" TextColor="#808080"/>
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                        <Border Grid.Column="2" StrokeShape="RoundRectangle 8" Padding="10,2" BackgroundColor="#15151D" Stroke="#2A2A38">
+                                            <TimePicker IsEnabled="{Binding UserProfile.IsNoonReminderEnabled}" Time="{Binding UserProfile.NoonReminderTime}" Format="HH:mm" TextColor="#00E5FF" FontFamily="Vazirmatn"/>
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Evening Slot -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding UserProfile.IsEveningReminderEnabled}" Color="#8A4FFF" VerticalOptions="Center"/>
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="🌇" FontSize="16" VerticalOptions="Center"/>
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="تمرکز عصر" FontFamily="Vazirmatn" FontSize="13" TextColor="White"/>
+                                                <Label Text="پیش‌فرض: ۱۷:۰۰" FontFamily="Vazirmatn" FontSize="10" TextColor="#808080"/>
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                        <Border Grid.Column="2" StrokeShape="RoundRectangle 8" Padding="10,2" BackgroundColor="#15151D" Stroke="#2A2A38">
+                                            <TimePicker IsEnabled="{Binding UserProfile.IsEveningReminderEnabled}" Time="{Binding UserProfile.EveningReminderTime}" Format="HH:mm" TextColor="#00E5FF" FontFamily="Vazirmatn"/>
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Night Slot -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding UserProfile.IsNightReminderEnabled}" Color="#8A4FFF" VerticalOptions="Center"/>
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="🌙" FontSize="16" VerticalOptions="Center"/>
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="بررسی پایانی شب" FontFamily="Vazirmatn" FontSize="13" TextColor="White"/>
+                                                <Label Text="پیش‌فرض: ۲۱:۰۰" FontFamily="Vazirmatn" FontSize="10" TextColor="#808080"/>
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                        <Border Grid.Column="2" StrokeShape="RoundRectangle 8" Padding="10,2" BackgroundColor="#15151D" Stroke="#2A2A38">
+                                            <TimePicker IsEnabled="{Binding UserProfile.IsNightReminderEnabled}" Time="{Binding UserProfile.NightReminderTime}" Format="HH:mm" TextColor="#00E5FF" FontFamily="Vazirmatn"/>
+                                        </Border>
+                                    </Grid>
+                                </VerticalStackLayout>
+
+                                <BoxView HeightRequest="1" Color="#2A2A38" Margin="0,4" IsVisible="{Binding UserProfile.IsDailyReminderEnabled}"/>
+
+                                <!-- Granular Weekly Schedule Matrix -->
+                                <VerticalStackLayout Spacing="10" IsVisible="{Binding UserProfile.IsDailyReminderEnabled}">
+                                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                        <Label Grid.Column="0" Text="⏰ یادآورهای اختصاصی با روز و ساعت دلخواه" FontFamily="Vazirmatn" FontSize="13" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                                        <Button Grid.Column="1" 
+                                                Text="+ زمان‌بندی جدید" 
+                                                Command="{Binding AddCustomReminderCommand}" 
+                                                BackgroundColor="#262633" 
+                                                TextColor="#00E5FF" 
+                                                FontSize="11" 
+                                                CornerRadius="8" 
+                                                HeightRequest="32" 
+                                                Padding="10,0" 
+                                                FontFamily="Vazirmatn"/>
+                                    </Grid>
+
+                                    <CollectionView ItemsSource="{Binding UserProfile.CustomReminders}" SelectionMode="None">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="model:CustomReminder">
+                                                <Border StrokeShape="RoundRectangle 12" BackgroundColor="#15151D" Stroke="#2A2A38" Padding="10" Margin="0,4">
+                                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" Color="#8A4FFF" VerticalOptions="Center"/>
+
+                                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                                            <Entry Text="{Binding Title}" FontSize="13" TextColor="White" FontFamily="Vazirmatn" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                                            <Label Text="{Binding ActiveDaysSummary}" FontSize="10" TextColor="#00E5FF" FontFamily="Vazirmatn" LineBreakMode="TailTruncation"/>
+                                                        </VerticalStackLayout>
+
+                                                        <Button Grid.Column="2" 
+                                                                Text="تنظیم ساعت روزها ⏰" 
+                                                                Command="{Binding Source={x:Reference profilePage}, Path=BindingContext.OpenDayPickerCommand}" 
+                                                                CommandParameter="{Binding .}" 
+                                                                BackgroundColor="#22222E" 
+                                                                TextColor="#B58AFF" 
+                                                                FontSize="11" 
+                                                                CornerRadius="6" 
+                                                                HeightRequest="32" 
+                                                                Padding="8,0" 
+                                                                FontFamily="Vazirmatn"/>
+
+                                                        <Button Grid.Column="3" 
+                                                                Text="✕" 
+                                                                Command="{Binding Source={x:Reference profilePage}, Path=BindingContext.RemoveCustomReminderCommand}" 
+                                                                CommandParameter="{Binding .}" 
+                                                                BackgroundColor="Transparent" 
+                                                                TextColor="#E53935" 
+                                                                FontSize="14" 
+                                                                WidthRequest="32" 
+                                                                HeightRequest="32" 
+                                                                Padding="0"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </VerticalStackLayout>
+
+                                <!-- Commit Configuration Changes -->
+                                <Button Text="ذخیره و فعال‌سازی زمان‌بندی یادآورها"
+                                        Command="{Binding SaveReminderSettingsCommand}"
+                                        BackgroundColor="#8A4FFF"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        FontFamily="Vazirmatn"
+                                        CornerRadius="12"
+                                        HeightRequest="42"
+                                        Margin="0,6,0,0"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Label Text="مدال‌ها و دستاوردها" TextColor="White" FontSize="20" FontAttributes="Bold" Margin="5,5,5,0" FontFamily="Vazirmatn"/>
+                    </VerticalStackLayout>
+                </CollectionView.Header>
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="14" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodel:AchievementViewModel">
+                        <Grid Padding="20, 0">
+                            <Border Padding="16" 
+                                    StrokeShape="RoundRectangle 16" 
+                                    Stroke="{Binding CardBorder}"
+                                    StrokeThickness="1.5"
+                                    BackgroundColor="{Binding CardBackground}"
+                                    Opacity="{Binding Opacity}">
+
+                                <VerticalStackLayout Spacing="14">
+                                    <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="16" VerticalOptions="Center">
+
+                                        <!-- Render Surface Workaround for WinUI 3 Asset Constraints -->
+                                        <Border Grid.Column="0"
+                                                StrokeShape="RoundRectangle 14"
+                                                BackgroundColor="#22222E"
+                                                StrokeThickness="0"
+                                                HeightRequest="56"
+                                                WidthRequest="56"
+                                                VerticalOptions="Center"
+                                                HorizontalOptions="Center">
+                                            <Grid HeightRequest="56" WidthRequest="56">
+                                                <Image Source="{Binding Icon}" 
+                                                       Aspect="AspectFit"
+                                                       HeightRequest="38" 
+                                                       WidthRequest="38" 
+                                                       HorizontalOptions="Center" 
+                                                       VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                            <Label Text="{Binding DisplayName}" 
+                                                   TextColor="White" 
+                                                   FontAttributes="Bold" 
+                                                   FontSize="16" 
+                                                   FontFamily="Vazirmatn"/>
+                                            <Label Text="{Binding DisplayDescription}" 
+                                                   FontSize="13" 
+                                                   TextColor="#A0A0A0" 
+                                                   FontFamily="Vazirmatn"/>
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="2" 
+                                               Text="{Binding StatusText}" 
+                                               TextColor="{Binding StatusColor}" 
+                                               FontSize="12" 
+                                               FontAttributes="Bold" 
+                                               HorizontalOptions="End"
+                                               VerticalOptions="Center"
+                                               FontFamily="Vazirmatn"/>
+                                    </Grid>
+
+                                    <Border StrokeShape="RoundRectangle 10" 
+                                            BackgroundColor="#101014" 
+                                            Padding="12" 
+                                            StrokeThickness="0">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Label Text="{Binding DisplayGuide}" 
+                                                   FontSize="12" 
+                                                   TextColor="#CCCCCC" 
+                                                   FontFamily="Vazirmatn"/>
+
+                                            <Button Text="افزودن این تسک به برنامه‌ام +" 
+                                                   IsVisible="{Binding IsSampleButtonVisible}"
+                                                   Command="{Binding Source={x:Reference profilePage}, Path=BindingContext.CreateSampleTaskCommand}"
+                                                   CommandParameter="{Binding DisplaySampleTask}"
+                                                   BackgroundColor="#8A4FFF"
+                                                   TextColor="White"
+                                                   CornerRadius="8"
+                                                   HeightRequest="36"
+                                                   FontSize="12"
+                                                   FontFamily="Vazirmatn"
+                                                   HorizontalOptions="Fill"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.Footer>
+                    <BoxView HeightRequest="40" Color="Transparent"/>
+                </CollectionView.Footer>
+
+            </CollectionView>
+        </Grid>
+
+        <!-- Contextual Day/Time Scheduler Modal -->
+        <Grid BackgroundColor="#CC000000" 
+              IsVisible="{Binding IsDayPickerModalVisible}" 
+              ZIndex="999" 
+              Padding="25">
+            <Border StrokeShape="RoundRectangle 20" 
+                    BackgroundColor="#1E1E26" 
+                    Stroke="#8A4FFF" 
+                    StrokeThickness="1.5" 
+                    Padding="18" 
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Fill">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="تنظیم روزها و ساعت اختصاصی" 
+                           FontFamily="Vazirmatn" 
+                           FontSize="16" 
+                           FontAttributes="Bold" 
+                           TextColor="White" 
+                           HorizontalOptions="Center"/>
+
+                    <Label Text="تیک روز را بزنید و ساعت مشخص آن روز را تنظیم کنید:" 
+                           FontFamily="Vazirmatn" 
+                           FontSize="12" 
+                           TextColor="#A0A0A0" 
+                           HorizontalOptions="Center"/>
+
+                    <!-- 7-Day Matrix Dispatcher -->
+                    <CollectionView ItemsSource="{Binding EditingReminder.WeeklySchedules}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="model:DayScheduleItem">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" Padding="0, 4" VerticalOptions="Center">
+
+                                    <CheckBox Grid.Column="0" 
+                                              IsChecked="{Binding IsSelected}" 
+                                              Color="#8A4FFF" 
+                                              VerticalOptions="Center"/>
+
+                                    <Label Grid.Column="1" 
+                                           Text="{Binding DayTitle}" 
+                                           FontFamily="Vazirmatn" 
+                                           FontSize="14" 
+                                           TextColor="White" 
+                                           VerticalOptions="Center"/>
+
+                                    <Border Grid.Column="2" 
+                                            StrokeShape="RoundRectangle 8" 
+                                            Padding="10, 2" 
+                                            BackgroundColor="#13131A" 
+                                            Stroke="#2A2A38">
+                                        <TimePicker Time="{Binding ScheduledTime}" 
+                                                    IsEnabled="{Binding IsSelected}" 
+                                                    Format="HH:mm" 
+                                                    TextColor="#00E5FF" 
+                                                    FontFamily="Vazirmatn" 
+                                                    VerticalOptions="Center"/>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Button Text="تأیید و ذخیره زمان‌بندی روزها" 
+                            Command="{Binding CloseDayPickerCommand}" 
+                            BackgroundColor="#8A4FFF" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            HeightRequest="42" 
+                            FontFamily="Vazirmatn" 
+                            FontAttributes="Bold"
+                            Margin="0, 8, 0, 0"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

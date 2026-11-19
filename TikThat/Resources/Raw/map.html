@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #121218;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* تم تاریک نئونی و یکدست برای تایل‌های آزاد */
+        .leaflet-tile {
+            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+        }
+
+        /* نوار جستجو شناور بالا */
+        .search-container {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .search-box {
+            background: #1E1E26;
+            border: 1.5px solid #8A4FFF;
+            border-radius: 12px;
+            display: flex;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+            .search-box input {
+                flex: 1;
+                padding: 12px 14px;
+                background: transparent;
+                border: none;
+                color: #fff;
+                font-size: 14px;
+                outline: none;
+                direction: rtl;
+            }
+
+            .search-box button {
+                background: #8A4FFF;
+                color: #fff;
+                border: none;
+                padding: 0 16px;
+                font-size: 13px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+        #results {
+            background: #1E1E26;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #2A2A38;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+        }
+
+        .result-item {
+            padding: 10px 14px;
+            border-bottom: 1px solid #2A2A38;
+            color: #ddd;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: right;
+        }
+
+            .result-item:hover {
+                background: #2A2A38;
+            }
+
+        /* دکمه‌های زوم اختصاصی گوشه راست پایین */
+        .zoom-controls {
+            position: absolute;
+            right: 16px;
+            bottom: 90px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .map-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #1E1E26;
+            border: 1px solid #3C3C4D;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            user-select: none;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+            .map-btn:active {
+                background: #2D2D3D;
+                border-color: #8A4FFF;
+            }
+
+        .btn-gps {
+            color: #00E5FF;
+            font-size: 22px;
+        }
+
+        /* دکمه ثبت موقعیت پایین صفحه */
+        .fab-confirm {
+            position: absolute;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: #8A4FFF;
+            color: #fff;
+            text-align: center;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: bold;
+            font-size: 15px;
+            box-shadow: 0 5px 20px rgba(138, 79, 255, 0.5);
+            cursor: pointer;
+        }
+
+            .fab-confirm:active {
+                background: #7138df;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="جستجوی شهر، خیابان، مکان..." onkeypress="if(event.key==='Enter') searchLocation();" />
+            <button onclick="searchLocation()">جستجو</button>
+        </div>
+        <div id="results"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- کنترل‌های زوم و موقعیت فعلی -->
+    <div class="zoom-controls">
+        <div class="map-btn" title="بزرگ‌نمایی" onclick="zoomIn()">+</div>
+        <div class="map-btn" title="کوچک‌نمایی" onclick="zoomOut()">−</div>
+        <div class="map-btn btn-gps" title="موقعیت فعلی من" onclick="requestMyLocation()">📍</div>
+    </div>
+
+    <div class="fab-confirm" onclick="confirmLocation()">ثبت موقعیت انتخاب‌شده</div>
+
+    <script>
+        var currentLat = 35.6892;
+        var currentLng = 51.3890;
+
+        // ایجاد نقشه بدون کنترل پیش‌فرض خاکستری
+        var map = L.map('map', { zoomControl: false }).setView([currentLat, currentLng], 14);
+
+        // استفاده از لایه آزاد سرور فرانسه (بدون نیاز به کلید، بدون محدودیت و سازگار با دسکتاپ و موبایل)
+        L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            subdomains: ['a', 'b', 'c'],
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([currentLat, currentLng], { draggable: true }).addTo(map);
+
+        map.on('click', function (e) {
+            currentLat = e.latlng.lat;
+            currentLng = e.latlng.lng;
+            marker.setLatLng(e.latlng);
+        });
+
+        marker.on('dragend', function (e) {
+            var pos = marker.getLatLng();
+            currentLat = pos.lat;
+            currentLng = pos.lng;
+        });
+
+        // متدهای کنترل زوم
+        function zoomIn() {
+            map.zoomIn();
+        }
+
+        function zoomOut() {
+            map.zoomOut();
+        }
+
+        // درخواست موقعیت زنده دستگاه از لایه نیتیو سی‌شارپ
+        function requestMyLocation() {
+            window.location.href = "tikthat://getmyposition";
+        }
+
+        // فراخوانی توسط کد سی‌شارپ برای جابه‌جایی دوربین به لوکیشن GPS
+        function panToCurrentLocation(lat, lng) {
+            currentLat = lat;
+            currentLng = lng;
+            map.setView([lat, lng], 17);
+            marker.setLatLng([lat, lng]);
+        }
+
+        function searchLocation() {
+            var query = document.getElementById('searchInput').value;
+            if (!query || query.length < 2) return;
+
+            var url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(query);
+            fetch(url, { headers: { 'User-Agent': 'TikThat-TaskApp/1.0' } })
+                .then(res => res.json())
+                .then(data => {
+                    var box = document.getElementById('results');
+                    box.innerHTML = '';
+                    if (data && data.length > 0) {
+                        box.style.display = 'block';
+                        data.forEach(item => {
+                            var div = document.createElement('div');
+                            div.className = 'result-item';
+                            div.innerText = item.display_name;
+                            div.onclick = function () {
+                                currentLat = parseFloat(item.lat);
+                                currentLng = parseFloat(item.lon);
+                                map.setView([currentLat, currentLng], 16);
+                                marker.setLatLng([currentLat, currentLng]);
+                                box.style.display = 'none';
+                            };
+                            box.appendChild(div);
+                        });
+                    }
+                })
+                .catch(err => console.error("Search error:", err));
+        }
+
+        function confirmLocation() {
+            window.location.href = "tikthat://location?lat=" + currentLat + "&lng=" + currentLng;
+        }
+    </script>
+</body>
+</html>

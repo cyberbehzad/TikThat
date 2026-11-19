@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:TikThat.ViewModels"
+             xmlns:model="clr-namespace:TikThat.Models"
+             xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+             xmlns:converters="clr-namespace:TikThat.Converters"
+             x:Class="TikThat.Views.MainPage"
+             x:DataType="viewmodel:MainViewModel"
+             x:Name="mainPage"
+             Shell.NavBarIsVisible="False"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{AppThemeBinding Dark=#121212, Light=#F8F9FB}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="MauiPurple">#8A4FFF</Color>
+            <Color x:Key="MicrosoftBlue">#0078D4</Color>
+            <Color x:Key="DarkBgColor">#121212</Color>
+            <Color x:Key="DarkCardColor">#2C2C2C</Color>
+            <Color x:Key="DarkTextColor">#FFFFFF</Color>
+            <Color x:Key="DarkBorderColor">#3C3C3C</Color>
+            <Color x:Key="LightBgColor">#F8F9FB</Color>
+            <Color x:Key="LightCardColor">#FFFFFF</Color>
+            <Color x:Key="LightTextColor">#1A1A1A</Color>
+            <Color x:Key="LightBorderColor">#E0E0E0</Color>
+            <Color x:Key="CancelButtonGray">#8E8E93</Color>
+
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
+            <Style x:Key="IconButtonStyle" TargetType="ImageButton">
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+
+            <Style x:Key="HeaderLabelStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Vazirmatn" />
+                <Setter Property="FontSize" Value="40" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextColor}, Dark={StaticResource MauiPurple}}" />
+            </Style>
+
+            <Style x:Key="CardBorderStyle" TargetType="Border">
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+                <Setter Property="Padding" Value="14,14" />
+                <Setter Property="Margin" Value="0,5" />
+                <Setter Property="Stroke" Value="{AppThemeBinding Dark={StaticResource DarkBorderColor}, Light={StaticResource LightBorderColor}}" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource DarkCardColor}, Light={StaticResource LightCardColor}}" />
+            </Style>
+
+            <Style x:Key="CheckButtonStyle" TargetType="Button">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="BorderColor" Value="Transparent" />
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="HeightRequest" Value="36" />
+                <Setter Property="WidthRequest" Value="36" />
+            </Style>
+
+            <Style x:Key="TaskLabelStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Vazirmatn" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="HorizontalTextAlignment" Value="Start" />
+            </Style>
+
+            <Style x:Key="ActionIconStyle" TargetType="ImageButton">
+                <Setter Property="HeightRequest" Value="32" />
+                <Setter Property="WidthRequest" Value="32" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid RowDefinitions="Auto, Auto, *" Padding="20, 50, 20, 20" RowSpacing="15">
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10">
+                <ImageButton Grid.Column="0" Source="calendar_icon.png" Command="{Binding GoToCalendarCommand}" Style="{StaticResource IconButtonStyle}"/>
+                <Label Grid.Column="1" Text="TikThat" Style="{StaticResource HeaderLabelStyle}"/>
+                <ImageButton Grid.Column="2" Source="profile_icon.png" Command="{Binding GoToProfileCommand}" Style="{StaticResource IconButtonStyle}"/>
+                <ImageButton Grid.Column="3" Source="{Binding ThemeIcon}" Command="{Binding ToggleThemeCommand}" Style="{StaticResource IconButtonStyle}"/>
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="1" Spacing="6">
+                <Label Text="{Binding SelectedDateText}" FontFamily="Vazirmatn" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" HorizontalTextAlignment="Center" Opacity="0.9"/>
+                <Label Text="{Binding ProgressText}" FontFamily="Vazirmatn" FontSize="13" HorizontalOptions="Start" HorizontalTextAlignment="Start" Opacity="0.8"/>
+                <ProgressBar Progress="{Binding ProgressValue}" ProgressColor="{StaticResource MauiPurple}" />
+            </VerticalStackLayout>
+
+            <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredTasks}" SelectionMode="None" Margin="0,0,0,70">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:TodoItem">
+                        <SwipeView>
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="حذف" BackgroundColor="#E53935"
+                                               Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.DeleteItemCommand}"
+                                               CommandParameter="{Binding .}"/>
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="حذف" BackgroundColor="#E53935"
+                                               Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.DeleteItemCommand}"
+                                               CommandParameter="{Binding .}"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Grid Padding="0, 4">
+                                <Border Style="{StaticResource CardBorderStyle}">
+
+                                    <FlyoutBase.ContextFlyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Text="حذف این تسک"
+                                                            Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.DeleteItemCommand}"
+                                                            CommandParameter="{Binding .}"/>
+                                            <MenuFlyoutItem Text="قفل / بازگشایی"
+                                                            Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.ToggleLockCommand}"
+                                                            CommandParameter="{Binding .}"/>
+                                        </MenuFlyout>
+                                    </FlyoutBase.ContextFlyout>
+
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+
+                                        <Button Grid.Column="0" Text="✔️"
+                                                Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.ToggleCompleteItemCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Style="{StaticResource CheckButtonStyle}"/>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                            <Label>
+                                                <Label.Style>
+                                                    <Style TargetType="Label" BasedOn="{StaticResource TaskLabelStyle}">
+                                                        <Setter Property="Text" Value="{Binding Text}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsLocked}" Value="True">
+                                                                <Setter Property="Text" Value="این تسک قفل شده است..." />
+                                                                <Setter Property="TextColor" Value="{StaticResource CancelButtonGray}" />
+                                                                <Setter Property="FontAttributes" Value="Italic" />
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                                                <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                                <Setter Property="Opacity" Value="0.6" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Label.Style>
+                                            </Label>
+
+                                            <HorizontalStackLayout Spacing="10">
+                                                <HorizontalStackLayout IsVisible="{Binding HasLocationReminder}" Spacing="4">
+                                                    <Image Source="location_pin_icon.png" WidthRequest="13" HeightRequest="13" VerticalOptions="Center"/>
+                                                    <Label Text="{Binding LocationName}" FontSize="12" TextColor="{StaticResource CancelButtonGray}" FontFamily="Vazirmatn" VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+
+                                                <HorizontalStackLayout IsVisible="{Binding HasTimeReminder}" Spacing="4">
+                                                    <Label Text="⏰" FontSize="11" VerticalOptions="Center"/>
+                                                    <Label Text="{Binding FormattedReminderTime}" FontSize="12" TextColor="#00E5FF" FontFamily="Vazirmatn" VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                        <HorizontalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
+
+                                            <ImageButton Source="ninja_icon.png"
+                                                         ToolTipProperties.Text="حالت تمرکز نینجا"
+                                                         Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.StartNinjaModeCommand}"
+                                                         CommandParameter="{Binding .}"
+                                                         Style="{StaticResource ActionIconStyle}"/>
+
+                                            <ImageButton Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.ToggleLockCommand}"
+                                                         ToolTipProperties.Text="قفل تسک"
+                                                         CommandParameter="{Binding .}">
+                                                <ImageButton.Style>
+                                                    <Style TargetType="ImageButton" BasedOn="{StaticResource ActionIconStyle}">
+                                                        <Setter Property="Source" Value="unlock_icon.png" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger TargetType="ImageButton" Binding="{Binding IsLocked}" Value="True">
+                                                                <Setter Property="Source" Value="lock_icon.png" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ImageButton.Style>
+                                            </ImageButton>
+
+                                            <Button Text="🗑️"
+                                                    FontSize="14"
+                                                    BackgroundColor="Transparent"
+                                                    BorderColor="Transparent"
+                                                    Padding="0"
+                                                    HeightRequest="32"
+                                                    WidthRequest="32"
+                                                    ToolTipProperties.Text="حذف تسک"
+                                                    Command="{Binding Source={x:Reference mainPage}, Path=BindingContext.DeleteItemCommand}"
+                                                    CommandParameter="{Binding .}"/>
+
+                                            <skia:SKLottieView Source="swipe_left_guide.json"
+                                                               IsVisible="{Binding IsSwipeHintVisible}"
+                                                               RepeatCount="-1"
+                                                               IsAnimationEnabled="True"
+                                                               HeightRequest="32"
+                                                               WidthRequest="32"
+                                                               VerticalOptions="Center"
+                                                               HorizontalOptions="End"
+                                                               InputTransparent="True"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <Grid x:Name="OverlayAnimationContainer" 
+              IsVisible="False" 
+              InputTransparent="True" 
+              ZIndex="99" 
+              HorizontalOptions="Fill" 
+              VerticalOptions="Fill">
+            <skia:SKLottieView x:Name="DynamicLottieView"
+                               RepeatCount="0"
+                               HeightRequest="260"
+                               WidthRequest="260"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               InputTransparent="True"/>
+        </Grid>
+
+        <skia:SKLottieView x:Name="AllDoneAnimationView" 
+                           Source="all_done_confetti.json" 
+                           IsVisible="False" 
+                           RepeatCount="0" 
+                           IsAnimationEnabled="False" 
+                           VerticalOptions="Fill" 
+                           HorizontalOptions="Fill" 
+                           ZIndex="100" 
+                           InputTransparent="True"/>
+
+        <Grid VerticalOptions="End" HorizontalOptions="Fill" Padding="20">
+            <Border x:Name="AddFormBorder"
+                    Padding="16"
+                    StrokeShape="RoundRectangle 20"
+                    IsVisible="{Binding IsAddFormVisible}"
+                    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkCardColor}, Light={StaticResource LightCardColor}}"
+                    Stroke="{AppThemeBinding Dark={StaticResource DarkBorderColor}, Light={StaticResource LightBorderColor}}"
+                    StrokeThickness="1">
+                <VerticalStackLayout Spacing="12">
+                    <Entry x:Name="TaskEntry"
+                           Placeholder="یک کار جدید اضافه کن..."
+                           Text="{Binding NewItemText}"
+                           FontFamily="Vazirmatn"
+                           FontSize="16"
+                           HorizontalTextAlignment="Start"
+                           VerticalOptions="Center"
+                           PlaceholderColor="{AppThemeBinding Dark=#A9A9A9, Light=Gray}"
+                           BackgroundColor="Transparent" />
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+
+                        <Border Grid.Column="0" 
+                                StrokeShape="RoundRectangle 10" 
+                                Padding="10,8" 
+                                Stroke="{AppThemeBinding Dark=#424242, Light=#E0E0E0}" 
+                                BackgroundColor="{AppThemeBinding Dark=#1E1E2E, Light=#F0F0F8}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetLocationReminderCommand}" />
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Image Source="add_location_icon.png" HeightRequest="20" WidthRequest="20" VerticalOptions="Center"/>
+                                <Label Text="{Binding LocationButtonText}" 
+                                       TextColor="{StaticResource MauiPurple}" 
+                                       VerticalOptions="Center" 
+                                       FontSize="13" 
+                                       FontFamily="Vazirmatn"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" 
+                                StrokeShape="RoundRectangle 10" 
+                                Padding="10,8" 
+                                Stroke="{AppThemeBinding Dark=#424242, Light=#E0E0E0}" 
+                                BackgroundColor="{AppThemeBinding Dark=#1E1E2E, Light=#F0F0F8}">
+                            <HorizontalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                <CheckBox IsChecked="{Binding HasTimeReminderForNewTask}" Color="{StaticResource MauiPurple}" VerticalOptions="Center"/>
+                                <Label Text="ساعت مشخص" TextColor="{AppThemeBinding Dark=White, Light=#1A1A1A}" VerticalOptions="Center" FontSize="13" FontFamily="Vazirmatn"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <Border IsVisible="{Binding HasTimeReminderForNewTask}"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="12,6"
+                            Stroke="{StaticResource MauiPurple}"
+                            BackgroundColor="{AppThemeBinding Dark=#1E1E2E, Light=#F0F0F8}">
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="⏰ زمان یادآوری:" TextColor="{StaticResource MauiPurple}" FontFamily="Vazirmatn" FontSize="13" VerticalOptions="Center"/>
+                            <TimePicker Grid.Column="1"
+                                        Time="{Binding SelectedTaskTime}"
+                                        TextColor="{AppThemeBinding Dark=White, Light=#1A1A1A}"
+                                        FontFamily="Vazirmatn"
+                                        HorizontalOptions="End"
+                                        Format="HH:mm"/>
+                        </Grid>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,5,0,0">
+                        <Button Grid.Column="0" Text="افزودن" Command="{Binding AddItemCommand}" BackgroundColor="{StaticResource MicrosoftBlue}" TextColor="White" CornerRadius="15" HeightRequest="45" FontFamily="Vazirmatn" FontAttributes="Bold"/>
+                        <Button Grid.Column="1" Text="لغو" Command="{Binding HideAddFormCommand}" BackgroundColor="Transparent" BorderColor="{StaticResource CancelButtonGray}" BorderWidth="1" TextColor="{StaticResource CancelButtonGray}" CornerRadius="15" HeightRequest="45" FontFamily="Vazirmatn"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Button IsVisible="{Binding IsAddFormVisible, Converter={StaticResource InvertedBoolConverter}}"
+                    IsEnabled="{Binding CanAddTaskForSelectedDate}"
+                    Text="+"
+                    Command="{Binding ShowAddFormCommand}"
+                    FontAttributes="Bold"
+                    FontSize="28"
+                    TextColor="White"
+                    CornerRadius="28"
+                    HeightRequest="56"
+                    WidthRequest="56"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End">
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="{StaticResource MicrosoftBlue}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource MauiPurple}" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.Shadow>
+                    <Shadow Brush="{StaticResource MauiPurple}" Offset="0,5" Radius="15" Opacity="0.8"/>
+                </Button.Shadow>
+            </Button>
+        </Grid>
+    </Grid>
+</ContentPage>
